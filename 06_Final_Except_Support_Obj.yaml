@@ -1,0 +1,1193 @@
+openapi: 3.0.0
+info:
+  version: '2.9'
+  title: 'CIM'
+  description: 'CIM Technical Representation in Swagger'
+paths: {}
+
+components:
+  schemas:
+    ###########################################################################################      
+    ###########################################################################################      
+    ###########################################################################################
+    # Vehicle Business Objects
+    Battery:
+      type: object
+      required:
+        - BatteryID
+        - SoC
+      properties:
+        BatteryID:
+          type: string
+        VIN:
+          type: string
+        BatteryType:
+          type: integer
+          minimum: 0
+          maximum: 4
+        BatteryCapacity:
+          type: integer
+          format: int32
+        SoC:
+          type: number
+          format: float
+        SoH:
+          type: number
+          format: double
+        BatteryFault:
+          type: integer
+          minimum: 1
+          maximum: 2
+        ChargeCompletionEstimatedTime:
+          type: integer
+          format: int32
+        ChargingStatus:
+          type: integer
+          minimum: 0
+          maximum: 3
+    Vehicle:
+      type: object
+      required:
+        - VIN
+        - ChargingMode
+        - MaxPower
+      properties:
+        VIN:
+          type: string
+        Manufacturer:
+          type: string
+        VehicleModel:
+          type: string
+        ChargingMode:
+          type: array
+          items:
+            type: integer
+            minimum: 1 
+            maximum: 7
+        MaxPower:
+          type: number
+          format: double
+        VehiclePower:
+          type: number
+          format: double
+        VehicleRange:
+          type: number
+          format: double
+        VehicleSpeed:
+          type: number
+          format: double
+        VehicleODO:
+          type: integer
+          format: int32
+        VehicleConsumption:
+          type: number
+          format: double
+        VehicleRemainingDistance:
+          type: integer
+          format: int32
+        CurrentLocation:
+          $ref: '#/components/schemas/LocationInfo'
+        DestinationLocation:
+          $ref: '#/components/schemas/LocationInfo'
+        ExternalTemperature:
+          type: integer
+          format: int32
+        VehicleHeatingStatus:
+          type: integer
+          minimum: 0 
+          maximum: 1
+        VehicleACStatus:
+          type: integer
+          minimum: 0 
+          maximum: 1
+        PreconditioningFunctionalities:
+          type: array
+          items:
+            type: integer
+            minimum: 0
+            maximum: 5
+    ###########################################################################################      
+    ###########################################################################################      
+    ###########################################################################################        
+    # Charge Session Business Objects
+    Authorisation:
+      type: object
+      required:
+        - CPOSessionId
+        - sessionId
+        - CPOID
+        - EVSEID
+        - eMAID
+        - ServiceId
+        - Status
+      properties:
+        CPOSessionId:
+          type: string
+        eMSPSessionId:
+          type: string
+        sessionId:
+          type: string
+        CPOID:
+          type: string
+        eMSPId:
+          type: string
+        EVSEID:
+          type: string
+        eMAID:
+          type: string
+        ServiceId:
+          type: string
+        Status:
+          type: integer
+          minimum: 0 
+          maximum: 1
+    ChargeDetailRecord:
+      type: object
+      required:
+        - CPOSessionId
+        - CDRID
+        - EVSEID
+        - eMAID
+        - GlobalBeginSession
+        - GlobalEndSession
+        - TotalEnergy
+        - GlobalTransactionCost
+        - Currency
+        - ChargingPeriodRecords
+      properties:
+        CPOSessionId:
+          type: string
+        CDRID:
+          type: string
+        EVSEID:
+          type: integer
+          format: int32
+        eMAID:
+          type: string
+        EnergyMeterID:
+          type: string
+        NumPhases:
+          type: integer
+          minimum: 0 
+          maximum: 2
+        GlobalBeginSession:
+          type: string
+          format: date-time
+        GlobalEndSession:
+          type: string
+          format: date-time
+        TotalEnergy:
+          type: number
+          format: float
+        GlobalTransactionCost:
+          type: number
+          format: float
+        Currency:
+          type: integer
+          format: int32
+        ChargingPeriodRecords:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChargingPeriodRecord'
+    ChargingPeriodRecord:
+      type: object
+      required:
+        - Start_datetime
+        - End_datetime
+        - Type
+        - MaxPowerAllowed
+        - Duration
+        - Energy
+        - DetailedCost
+        - Currency
+      properties:
+        Start_datetime:
+          type: string
+          format: date-time
+        End_datetime:
+          type: string
+          format: date-time
+        Type:
+          type: integer
+          minimum: 0 
+          maximum: 2
+        MaxPowerAllowed:
+          type: integer
+          format: int32
+        Duration:
+          type: string
+          pattern: '^(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9])$' #accepts formats hh:mm:ss (zeros mandatory)
+        Energy:
+          type: number
+          format: double
+        DetailedCost:
+          type: number
+          format: float
+        Currency:
+          type: integer
+          format: int32
+    ###########################################################################################      
+    ###########################################################################################      
+    ###########################################################################################      
+    # Smart Charge Business Objects
+    UserMobilityNeed:
+      type: object
+      required:
+        - eMAID
+        - RequestID
+        - Trip
+      properties:
+        eMAID:
+          type: string
+        RequestID:
+          type: string
+        Trip:
+          $ref: '#/components/schemas/Trip'
+        Vehicle:
+          $ref: '#/components/schemas/Vehicle'
+        VehicleLoad:
+          type: number
+          format: double
+    UserChargeNeed:
+      type: object
+      required:
+        - eMAID 
+        - RequestID
+        - ItinerarySections
+        - ItineraryEnergyNeed
+        - TripEnergyNeed
+      properties:
+        eMAID:
+          type: string
+        RequestID:
+          type: string
+        ItinerarySections:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItinerarySection'
+        Vehicle:
+          $ref: '#/components/schemas/Vehicle'
+        ItineraryEnergyNeed:
+          type: array
+          items:
+            type: number
+            format: double
+        TripEnergyNeed:
+          type: number
+          format: double
+    ChargeProposition:
+      type: object
+      required:
+        - eMAID 
+        - RequestID
+        - ChargeNeed
+        - ChargePropositionDetail
+      properties:
+        eMAID:
+          type: string
+        RequestID:
+          type: string
+        ChargeNeed:
+          $ref: '#/components/schemas/UserChargeNeed'
+        ChargePropositionDetail:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChargePropositionDetail'
+    ChargePropositionDetail:
+      type: object
+      required:
+        - eMAID 
+        - RequestID
+        - ChargePropositionID
+        - ChargingPool
+        - EVSE
+        - ChargingProfileOffer
+        - GlobalCost
+        - Currency
+      properties:
+        eMAID:
+          type: string
+        RequestID:
+          type: string
+        ChargePropositionID:
+          type: string
+        ChargingPool:
+          $ref: '#/components/schemas/ChargingPool'
+        EVSE:
+          $ref: '#/components/schemas/EVSE'
+        ChargingProfileOffer:
+          $ref: '#/components/schemas/ChargingProfile'
+        GlobalCost:
+          type: number
+          format: float
+        Currency:
+          type: integer
+          format: int32
+        Tariff:
+          type: number
+          format: float
+        Discount:
+          type: number
+          format: float
+        BookingFee:
+          type: number
+          format: float
+        CancellationFee:
+          type: number
+          format: float
+    PropositionReservationRequest:
+      type: object
+      required:
+        - eMAID 
+        - RequestID
+        - ChargePropositionID
+        - ReservationStartEnd
+      properties:
+        eMAID:
+          type: string
+        RequestID:
+          type: string
+        ChargePropositionID:
+          type: string
+        ReservationStartEnd:
+          $ref: '#/components/schemas/TimePeriod'
+    VariableOffers:
+      type: object
+      required:
+        - AreaNodeGeocoordinates 
+        - OfferValidFromTo
+      properties:
+        AreaNodeGeocoordinates:
+          type: array
+          items:
+            $ref: '#/components/schemas/GeoCoordinate'
+        OfferValidFromTo:
+          $ref: '#/components/schemas/TimePeriod'
+        PowerOffer:
+          type: array
+          items:
+            $ref: '#/components/schemas/PowerTime'
+        EnergyOffer:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnergyTime'
+        CostOffer:
+          type: array
+          items:
+            $ref: '#/components/schemas/CostOffer'
+        LastUpdate:
+          type: string
+          format: date-time
+    ###########################################################################################      
+    ###########################################################################################      
+    ###########################################################################################      
+    # Marketplace Business Objects
+    ServiceContract:
+      type: object
+      required:
+        - ContractId
+        - Status
+        - CreationDate
+        - ValidFromThrough
+        - ContractSection
+        - Service
+        - BusinessPartner
+      properties:
+        ContractId:
+          type: string
+        Status:
+          type: integer
+          minimum: 1
+          maximum: 3
+        CreationDate:
+          type: string
+          format: date-time
+        ValidFromThrough:
+          $ref: '#/components/schemas/TimePeriod'
+        LastChange:
+          type: string
+          format: date-time
+        ContractSection:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContractSection'
+        Service:
+          type: array
+          items:
+            $ref: '#/components/schemas/Service'
+        BusinessPartner:
+          $ref: '#/components/schemas/BusinessPartner'
+    ContractSection:
+      type: object
+      required:
+        - ContractId
+        - SectionId
+        - Name
+        - Description
+        - Type
+        - Terms
+      properties:
+        ContractId:
+          type: string
+        SectionId:
+          type: string
+        Name:
+          type: string
+        Description:
+          type: string
+        Type:
+          type: integer
+          minimum: 1
+          maximum: 2
+        Terms:
+          type: array
+          items:
+            $ref: '#/components/schemas/Terms'
+    Terms:
+      type: object
+      required:
+        - ContractId
+        - SectionId
+        - TermId
+        - Type
+        - Description
+      properties:
+        ContractId:
+          type: string
+        SectionId:
+          type: string
+        TermId:
+          type: string
+        Name:
+          type: string
+        Type:
+          type: integer
+          minimum: 1
+          maximum: 2
+        Description:
+          type: string
+        valueString:
+          type: string
+        valueDouble:
+          type: number
+          format: double
+    BusinessPartner:
+      type: object
+      required:
+        - PartnerID
+        - CompanyName
+        - Status
+        - BusinessPartnerAddress
+      properties:
+        PartnerID:
+          type: string
+        AdditionalIdD:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdditionalID'
+        dn:
+          type: string
+        CompanyName:
+          type: string
+        CompanyAcronym:
+          type: string
+        LegalRegistration:
+          type: string
+        Status:
+          type: integer
+          minimum: 1
+          maximum: 4
+        BusinessPartnerAddress:
+          type: array
+          items:
+            $ref: '#/components/schemas/AddressInfo'
+        BusinessPartnerInformation:
+          $ref: '#/components/schemas/BusinessPartnerInformation'
+        BusinessPartnerPersons:
+          type: array
+          items:
+            $ref: '#/components/schemas/Contact'
+        LastUpdate:
+          type: string
+          format: date-time
+    BusinessPartnerInformation:
+      type: object
+      properties:
+        companyDescription:
+          type: string
+        companyURL:
+          type: string
+        companyType:
+          type: string
+        noEmployee:
+          type: integer
+          minimum: 1
+          maximum: 5
+    AdditionalID:
+      type: object
+      required:
+        - idType
+        - idValue
+      properties:
+        idType:
+          type: integer
+          minimum: 1
+          maximum: 3
+        idValue:
+          type: string
+    Service:
+      type: object
+      required:
+        - ServiceId
+        - Name
+        - Description
+        - Category
+        - BusinessPartner
+        - Status
+        - webService
+        - Specification
+      properties:
+        ServiceId:
+          type: string
+        Name:
+          type: string
+        Description:
+          type: string
+        Category:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+        BusinessPartner:
+          $ref: '#/components/schemas/BusinessPartner'
+        Status:
+          type: integer
+          minimum: 1
+          maximum: 5
+        webService:
+          type: boolean
+        Specification:
+          type: string
+        TestInstructions:
+          type: string
+        SemanticDescription:
+          type: string
+        Assets:
+          type: string
+    Category:
+      type: object
+      required:
+        - categoryId
+        - Name
+      properties:
+        categoryId:
+          type: string
+        Name:
+          type: string
+        parentCategory:
+          $ref: '#/components/schemas/Category'
+        subcategory:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+    ServiceContractOffering:
+      type: object
+      required:
+        - offeringId
+        - offeringDate
+        - validFromThrough
+        - Status
+        - ContractSection
+        - Service
+      properties:
+        offeringId:
+          type: string
+        offeringDate:
+          type: string
+          format: date-time
+        validFromThrough:
+          $ref: '#/components/schemas/TimePeriod'
+        Status:
+          type: integer
+          minimum: 1
+          maximum: 5
+        ContractSection:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContractSection'
+        Service:
+          $ref: '#/components/schemas/Service'
+    ###########################################################################################      
+    ###########################################################################################      
+    ###########################################################################################      
+    # Marketplace Business Objects
+    User:
+      type: object
+      required:
+        - eMAID
+        - ContactInformation
+      properties:
+        eMAID:
+          type: string
+        ContactInformation:
+          $ref: '#/components/schemas/Contact'
+    UserProfile:
+      type: object
+      required:
+        - User
+        - ChargingPreferences
+        - TripHistory
+        - RecurrentPlaces
+        - RecurrentTrips
+      properties:
+        User:
+          $ref: '#/components/schemas/User'
+        ChargingPreferences:
+          $ref: '#/components/schemas/UserChargingPreferences'
+        DrivingPreferences:
+          $ref: '#/components/schemas/UserDrivingPreferences'
+        TripHistory:
+          type: array
+          items:
+            $ref: '#/components/schemas/Trip'
+        RecurrentPlaces:
+          type: array
+          items:
+            $ref: '#/components/schemas/RecurrentUserPlace'
+        RecurrentTrips:
+          type: array
+          items:
+            $ref: '#/components/schemas/RecurrentUserTrip'
+    UserChargingPreferences:
+      type: object
+      required:
+        - User
+        - Currency
+      properties:
+        User:
+          $ref: '#/components/schemas/User'
+        RangeAnxiety:
+          type: number
+          format: double
+        PreferredPools:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChargingPool'
+        PreferredCPOs:
+          type: array
+          items:
+            $ref: '#/components/schemas/CPO'
+        PreferredChargeLocations:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocationInfo'
+        PreferredTimeSlow:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimePeriod'
+        PreferredTimeFast:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimePeriod'
+        PreferredEVSEPower:
+          type: number
+          format: double
+        PreferredTarrif:
+          type: number
+          format: float
+        Currency:
+          type: integer
+          format: int32
+        PreferredAuthorisation:
+          type: array
+          items:
+            type: integer
+            minimum: 1
+            maximum: 15
+        PreferredCPFeatures:
+          type: array
+          items:
+            type: integer
+            minimum: 1
+            maximum: 3
+    UserDrivingPreferences:
+      type: object
+      required:
+        - User
+      properties:
+        User:
+          $ref: '#/components/schemas/User'
+        AverageConsumption:
+          type: number
+          format: double
+        ConsumptionPattern:
+          type: integer
+          minimum: 1
+          maximum: 3
+    UserAgenda:
+      type: object
+      required:
+        - User
+      properties:
+        User:
+          $ref: '#/components/schemas/User' 
+        Appointments:
+          type: array
+          items:
+            type: object
+            required:
+              - m_datetime
+              - m_appointment
+            properties:
+              m_datetime:
+                type: string
+                format: date-time
+              m_appointment:
+                $ref: '#/components/schemas/Appointment'
+    ###########################################################################################      
+    ###########################################################################################      
+    ###########################################################################################            
+    # eMobility Reporting Business Objects
+    GetLoadReport:
+      type: object
+      required:
+        - AuthorityID
+        - RequestID
+        - CPO
+        - FromTo
+      properties:
+        AuthorityID: # or EnergyRetailerID
+          type: string
+        RequestID:
+          type: string
+        CPO:
+          type: array
+          items:
+            $ref: '#/components/schemas/CPO'
+        FromTo:
+          $ref: '#/components/schemas/TimePeriod'
+    CPOLoadReport:
+      type: object
+      required:
+        - RequestID
+        - CPO
+        - FromTo
+        - LoadDetails
+        - CumulativeEnergy
+      properties:
+        RequestID:
+          type: string
+        CPO:
+          $ref: '#/components/schemas/CPO'
+        FromTo:
+          $ref: '#/components/schemas/TimePeriod'
+        LoadDetails:
+          type: array
+          items:
+            $ref: '#/components/schemas/LoadDetails'
+        CumulativeEnergy:
+          type: number
+          format: double
+    LoadDetails:
+      type: object
+      required:
+        - EVSEID
+        - CDRList
+        - CPEnergy
+      properties:
+        EVSEID:
+          type: string
+        LocationInfo:
+          $ref: '#/components/schemas/LocationInfo'
+        CDRList:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChargeDetailRecord'
+        CPEnergy:
+          type: number
+          format: double
+    AreaLoadReport:
+      type: object
+      required:
+        - RequestID
+        - CumulativeEnergyArea
+      properties:
+        RequestID:
+          type: string
+        CumulativeEnergyArea:
+          type: number
+          format: double
+    PoDDemand:
+      type: object
+      required:
+        - PoDID
+        - EnergyDemand
+      properties:
+        PoDID:
+          type: string
+        EnergyDemand:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnergyTime'
+    ###########################################################################################      
+    ###########################################################################################      
+    ###########################################################################################            
+    # Vehicle preparation Business Objects
+    FleetMobilityNeed:
+      type: object
+      required:
+        - eMAID
+        - RequestID
+        - UserMobilityNeed
+      properties:
+        eMAID:
+          type: string
+        RequestID:
+          type: string
+        UserMobilityNeed:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserMobilityNeed'
+    VehiclePredictedEnergyNeed:
+      type: object
+      required:
+        - Vehicle
+        - PredictedTripStart
+        - PredictedSoCNeedAtStart
+        - ProbabilityLevel
+      properties:
+        Vehicle:
+          $ref: '#/components/schemas/Vehicle'
+        PredictedTripStart:
+          type: string
+          format: date-time
+        PredictedSoCNeedAtStart:
+          type: number
+          format: double
+        ProbabilityLevel:
+          type: number
+          format: double
+    PreconditioningProfile:
+      type: object
+      required:
+        - Vehicle
+        - ChargingProfile
+      properties:
+        Vehicle: 
+          $ref: '#/components/schemas/Vehicle'
+        ChargingProfile: 
+          $ref: '#/components/schemas/ChargingProfile'
+        VehicleFunctionNotifications: 
+          type: array
+          items:
+            $ref: '#/components/schemas/VehicleFunctionNotification'
+    VehicleFunctionNotification:
+      type: object
+      required:
+        - Functionality
+        - StartTime
+      properties:
+        Functionality: 
+          type: integer
+          minimum: 0
+          maximum: 5
+        StartTime: 
+          type: string
+          format: date-time
+        StopTime: 
+          type: string
+          format: date-time
+        Level: 
+          type: integer
+          minimum: 0
+          maximum: 5
+        TemperatureSet: 
+          type: string
+          enum: [0, 1, 3]
+    ###########################################################################################      
+    ###########################################################################################      
+    ###########################################################################################            
+    # EV Charging infrastructure Business Objects       
+    ChargingConnector:
+      type: object
+      required:
+        - ChargingConnectorId
+        - TypeOfConnector
+        - MaxPower
+      properties:
+        ChargingConnectorId:
+          type: string  
+        Label:
+          type: string  
+        TypeOfConnector:
+          type: integer
+          minimum: 1
+          maximum: 34
+        MaxPower:
+          type: number
+          format: double
+        CableLength:
+          type: integer
+          format: int32
+        LastUpdate:
+          type: string 
+          format: date-time
+    EVSE:
+      type: object
+      required:
+        - EVSEID
+        - ChargingMode
+        - RatedPowerLevel
+        - ChargingConnectors
+      properties:
+        EVSEID:
+          type: string
+        Label:
+          type: string    
+        LastUsedTime:
+          type: string 
+          format: date-time
+        ChargingMode:
+          type: integer
+          minimum: 1
+          maximum: 7
+        RatedPowerLevel:
+          type: number
+          format: double
+        VoltageRating:
+          type: integer
+          format: int32
+        AdminState:
+          $ref: '#/components/schemas/AdminState'  
+        OperationalState:
+          $ref: '#/components/schemas/OperationalState'  
+        ChargingConnectors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChargingConnector'
+        ParkingInfo:
+          $ref: '#/components/schemas/ParkingInfo'
+        PoDID:
+          type: string    
+        EnergyMeterID:
+          type: string    
+        LastUpdate:
+          type: string
+          format: date-time
+    ChargingStation:
+      type: object
+      required:
+        - StationID
+        - AuthorisationMethods
+        - PaymentMethods
+        - LocationInfo
+        - EVSE
+      properties:
+        StationID:
+          type: string   
+        Label:
+          type: string   
+        AuthorisationMethods:
+          type: array
+          items:
+            type: integer
+            minimum: 1
+            maximum: 10
+        PaymentMethods:
+          type: array
+          items:
+            type: integer
+            minimum: 1
+            maximum: 6  
+        UserInterfaceFeatures:
+          type: array
+          items:
+            type: integer
+            minimum: 1
+            maximum: 2   
+        LanguageSupported:
+          type: array
+          items:
+            type: string
+        LocationInfo:
+          $ref: '#/components/schemas/LocationInfo'
+        Manufacturer:
+          type: string   
+        Model:
+          type: string   
+        StationType:
+            type: integer
+            minimum: 1
+            maximum: 2   
+        EVSE:
+          type: array
+          items:
+            $ref: '#/components/schemas/EVSE'
+        AdminState:
+          $ref: '#/components/schemas/AdminState'
+        UserComments:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserComments'
+        ServiceProviderComments:
+          type: string   
+        LastUpdate:
+          type: string   
+          format: date-time
+    ChargingPool:
+      type: object
+      required:
+        - PoolId
+        - Name
+        - LocationInfo
+        - ChargingStations
+        - TimeZoneOffset
+        - TimeZoneName
+        - CPO
+        - AdminState
+      properties:
+        PoolId:
+          type: string   
+        Name:
+          type: string  
+        Description:
+          type: string  
+        LocationInfo:
+          $ref: '#/components/schemas/LocationInfo'
+        ChargingStations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChargingStation'
+        OpenHours:
+          type: array
+          items:
+            $ref: '#/components/schemas/OpenHours'
+        Accessibility:
+            type: integer
+            minimum: 1
+            maximum: 4
+        TimeZoneOffset:
+          type: string
+          pattern: 'Z| +UTC|[+-]([01]\d|2[0-4])(:?[0-5]\d)?'
+        TimeZoneName:
+          type: string  
+        CPO:
+          $ref: '#/components/schemas/CPO'
+        AdminState:
+          $ref: '#/components/schemas/AdminState'
+        LastUpdate:
+          type: string  
+          format: date-time
+    ###########################################################################################      
+    ###########################################################################################      
+    ###########################################################################################  
+    # Support Objects
+    AddressInfo:
+      type: object
+      properties:
+        DUMMY:
+          type: string
+    AdminState:
+      type: object
+      properties:
+        DUMMY:
+          type: string
+    Appointment:
+      type: object
+      properties:
+        DUMMY:
+          type: string
+    Contact:
+      type: object
+      properties:
+        DUMMY:
+          type: string
+    CostOffer:
+      type: object
+      properties:
+        DUMMY:
+          type: string
+    ChargingProfile:
+      type: object
+      properties:
+        DUMMY:
+          type: string
+    ChargingProfilePeriod:
+      type: object
+      properties:
+        DUMMY:
+          type: string
+    CPO:
+      type: object
+      properties:
+        DUMMY:
+          type: string
+    EnergyTime:
+      type: object
+      properties:
+        DUMMY:
+          type: string
+    GeoCoordinate:
+      type: object
+      properties:
+        DUMMY:
+          type: string
+    ItinerarySection:
+      type: object
+      properties:
+        DUMMY:
+          type: string
+    LocationInfo:
+      type: object
+      properties:
+        DUMMY:
+          type: string
+    OpenHours:
+      type: object
+      properties:
+        DUMMY:
+          type: string
+    OperationalState:
+      type: object
+      properties:
+        DUMMY:
+          type: string
+    ParkingInfo:
+      type: object
+      properties:
+        DUMMY:
+          type: string
+    PowerTime:
+      type: object
+      properties:
+        DUMMY:
+          type: string
+    RecurrentUserPlace:
+      type: object
+      properties:
+        DUMMY:
+          type: string
+    RecurrentUserTrip:
+      type: object
+      properties:
+        DUMMY:
+          type: string
+    TimeFrequency:
+      type: object
+      properties:
+        DUMMY:
+          type: string
+    TimePeriod:
+      type: object
+      properties:
+        DUMMY:
+          type: string
+    Trip:
+      type: object
+      properties:
+        DUMMY:
+          type: string
+    UserComments:
+      type: object
+      properties:
+        DUMMY:
+          type: string
